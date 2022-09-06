@@ -1,0 +1,42 @@
+﻿@using CustomersAJAX.Models
+@model Tuple<List<Customer>, Customer>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    AjaxOptions ajaxOptions = new AjaxOptions
+    {
+        HttpMethod = "POST",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "customerInfo"
+    };
+}
+
+@using (Ajax.BeginForm("OnSelectCustomer", "Customer", ajaxOptions, new { id = "customerForm" }))
+{
+    @Html.AntiForgeryToken();
+
+    var selected = false;
+
+    foreach (var item in Model.Item1)
+    {
+        if (Model.Item2 == item)
+        {
+            selected = true;
+        }
+        else
+        {
+            selected = false;
+        }
+        @Html.RadioButton("CustomerNumber", item.ID, selected, new { onchange = "$('#customerForm').trigger('submit')" })
+        @Html.Label(item.Name)
+        <br />
+    }
+    <!-- Not required since we are using an onchange event on the radio buttons
+    <input type="submit" id="SubmitButton"value="Display Details" />
+        -->
+}
+
+<!-- insert a partial view here. Show customer details. Pass the second item of the tuple model-->
+<div id="customerInfo">
+    @Html.Partial("~/Views/Shared/_CustomerDetails.cshtml", Model.Item2)
+</div>
